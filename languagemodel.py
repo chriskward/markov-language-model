@@ -14,6 +14,7 @@ class MarkovModel():
 			self._pmf = _estimate_probs(pmf,context,next_char)
 
 
+
 		def _stride_split(self, text, n):
 
 			text = np.array( text,dtype=np.str_ )
@@ -21,6 +22,7 @@ class MarkovModel():
 			context = np.lib.stride_tricks.sliding_window_view( buffer, (n,)).view('U'+str(n)).flatten()
 			
 			return context, buffer[n:]
+
 
 
 		def _estimate_probs(self, pmf, context, next_char):
@@ -36,5 +38,22 @@ class MarkovModel():
 			return pmf.divide(norm_constant, axis=0)
 
 
-		
+
+		def generate(self,length=100):
+
+			text_out = np.random.choice(self._pmf.index)
+
+			while len(text_out) < length:
+				
+				context = text_out[-self.n:]
+				if context not in self._pmf.index:
+					context = np.random.choice(self._pmf.index)
+
+				cdf = np.cumsum( self._pmf.loc[context] )
+
+				cdf -= np.random.uniform()
+				cdf[cdf<0] = np.nan
+				text_sample += cdf.index[ cdf.argmin() ]
+
+			return text_sample
 
