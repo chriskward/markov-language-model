@@ -57,3 +57,18 @@ class MarkovModel():
 
 			return text_sample
 
+
+		def predict(self,text):
+
+			context, next_char = _stride_split(text,self.n)
+			prob_seq = []
+
+			for x,y in zip(context,next_char):
+				if x in self._pmf.index and y in self._pmf.columns:
+					prob_seq.append( self._pmf.loc[x,y] )
+
+			return np.log(prob_seq).sum()
+
+
+
+
