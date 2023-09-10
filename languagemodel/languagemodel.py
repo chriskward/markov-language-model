@@ -1,4 +1,4 @@
-import numpy as numpy
+import numpy as np
 import pandas as pd
 
 class MarkovModel():
@@ -9,18 +9,19 @@ class MarkovModel():
 			self.n = n
 			if not isinstance(data,str) : raise TypeError('Training data must be provided as type: str')
 
-			context,next_char = _stride_split(data, self.n)
-			pmf = pd.DataFrame( index=np.unique(context), cols=np.unique(next_char), data=self.alpha )
-			self._pmf = _estimate_probs(pmf,context,next_char)
+			context,next_char = self._stride_split(data, self.n)
+			pmf = pd.DataFrame( index=np.unique(context), columns=np.unique(next_char), data=self.alpha )
+			self._pmf = self._estimate_probs(pmf,context,next_char)
 
 
 
 		def _stride_split(self, text, n):
 
 			text = np.array( text,dtype=np.str_ )
-			buffer - np.frombuffer( text, dtype='U1' )
+			buffer = np.frombuffer( text, dtype='U1' )
 			context = np.lib.stride_tricks.sliding_window_view( buffer, (n,)).view('U'+str(n)).flatten()
-			
+			context = context[:-1]
+
 			return context, buffer[n:]
 
 
@@ -28,10 +29,10 @@ class MarkovModel():
 		def _estimate_probs(self, pmf, context, next_char):
 
 			for x in pmf.index:
-				mask = np.argwhere(context==x).flatten()
+				mask = np.argwhere(context==x)
 
 				for y in next_char[mask]:
-					pmf[y][x] += 1
+					pmf.loc[x,y] += 1
 
 			norm_constant = pmf.sum(axis=1)
 
@@ -53,14 +54,14 @@ class MarkovModel():
 
 				cdf -= np.random.uniform()
 				cdf[cdf<0] = np.nan
-				text_sample += cdf.index[ cdf.argmin() ]
+				text_out += cdf.index[ cdf.argmin() ]
 
-			return text_sample
+			return text_out
 
 
 		def predict(self,text):
 
-			context, next_char = _stride_split(text,self.n)
+			context, next_char = self._stride_split(text,self.n)
 			prob_seq = []
 
 			for x,y in zip(context,next_char):
