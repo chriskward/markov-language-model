@@ -136,7 +136,7 @@ class MarkovModel():
 
 		1) samples from the n-grams corresponding mass function (ie the corresponding row of self._pmf) by the inverstion method
 		2) appends this character to the output string
-		3) selects the training n characters of the output string as the next n-gram
+		3) selects the trailing n characters of the output string as the next n-gram
 		4) repeats from (1) till a string of the desired length has been sampled
 		"""
 
@@ -152,12 +152,13 @@ class MarkovModel():
 			context = text_out[-self.n:]
 
 			# if this ngram is not in the pmf (which could
-			# happen as we are randomly sampling; we could
-			# generate text that didnt feature in the training
-			# set) .... then sample a new ngram from the pmf
+			# happen as we are randomly sampling characters)
+			# then we sample a new ngram from the pmf and 
+			# append this to the output string.
 
 			if context not in self._pmf.index:
 				context = np.random.choice(self._pmf.index)
+				text_out += ' '+context
 
 			# select the row of pmf corresponding to 'context'
 			# this row the conditional pmf over the character set
