@@ -52,15 +52,16 @@ lib.stride_tricks and direct buffer access to view to string as a sequence of
 
     'Hello' -> ['Hell' , 'o']
 
-By counting the occurances of each such *context_vector* and
+By counting the occurances of each *context_vector* and
 *trailing_character* combination in the training text the model can estimate probabilites:
 
-    $P( x_i | x_{n} , x_{n-1} , ... , x_{i-1}$
 
+$\mathbb{P}( x_i | x_{i-1} , x_{i-2} , ... , x_{i-n})$
+
+    
 For example:
 
-    $P( O | 'Hell' )$
-
+$\mathbb{P}(\ \text{'O'}\ |\ \text{'Hell'}\ )$
 
 
 
