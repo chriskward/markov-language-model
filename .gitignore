@@ -2,3 +2,5 @@
 test.ipynb
 langaugemodel/__pycache__
 languagemodel/.ipynb_checkpoints
+.idea
+markovmodel.egg-info
